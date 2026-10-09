@@ -78,11 +78,45 @@ function staticWebAppConfig(env: Record<string, string>): Plugin {
   };
 }
 
+/**
+ * En la versión demo para alojamiento estático (GitHub Pages) no hay cabeceras
+ * propias del servidor: la política de seguridad va como <meta> en el HTML.
+ */
+function cspEnHtml(): Plugin {
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self'",
+    "img-src 'self' blob: data:",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ');
+  return {
+    name: 'csp-en-html',
+    apply: 'build',
+    transformIndexHtml: () => [
+      {
+        tag: 'meta',
+        attrs: { 'http-equiv': 'Content-Security-Policy', content: csp },
+        injectTo: 'head-prepend',
+      },
+      {
+        tag: 'meta',
+        attrs: { name: 'referrer', content: 'strict-origin-when-cross-origin' },
+        injectTo: 'head-prepend',
+      },
+    ],
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
   return {
     base: mode === 'preview' ? './' : '/',
-    plugins: [react(), staticWebAppConfig(env)],
+    plugins: [react(), staticWebAppConfig(env), ...(mode === 'preview' ? [cspEnHtml()] : [])],
     build: {
       target: 'es2022',
       sourcemap: false,

@@ -27,6 +27,17 @@ El modo demo funciona **sin login y sin conectarse a Microsoft**. Trae unas 30 i
 
 Abre el enlace de vista previa que te hemos compartido. Es la misma app en modo demo.
 
+### Demo pública en GitHub Pages
+
+El repositorio publica la demo sola cada vez que se actualiza la rama `main` (archivo `.github/workflows/pages.yml`). Hay que activarlo una vez:
+
+1. En GitHub, entra en este repositorio → **Settings → Pages**.
+2. En **Source** elige **GitHub Actions**.
+3. Ve a **Actions → Demo en GitHub Pages → Run workflow** (o espera al siguiente cambio en `main`).
+4. La demo queda en `https://kaeldafae.github.io/ORGANIZACION/`.
+
+Es una página pública: cualquiera con el enlace la ve. Solo contiene datos inventados y no se conecta a Microsoft 365, así que no expone nada del hotel. La app real (con login) se publica aparte en Azure (apartado 4).
+
 ### En tu ordenador
 
 Solo hace falta una vez:

@@ -1,0 +1,45 @@
+name: Demo en GitHub Pages
+
+# Publica la versión demo (datos de ejemplo, sin login) cada vez que cambia main.
+# Requiere activar una vez: Settings → Pages → Source: GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Compilar y publicar la demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:preview
+      - name: Preparar carpeta
+        run: |
+          rm -f dist/staticwebapp.config.json
+          touch dist/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: despliegue
+        uses: actions/deploy-pages@v4
